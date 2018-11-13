@@ -23,6 +23,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   isLoading = false; // for mat-spinner
   totalPosts = 10; // for mat-paginator
   postsPerPage = 2; // for mat-paginator
+  currentPage = 1;
   pageSizeOptions = [1, 2, 5, 10]; // for mat-paginator
   private postsSub: Subscription;
   // postsService: PostsService;
@@ -33,7 +34,7 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.isLoading = true; // for mat-spinner
-    this.postsService.getPosts();
+    this.postsService.getPosts(this.postsPerPage, this.currentPage);
     this.postsSub = this.postsService.getPostsUpdateListner()
     .subscribe((posts: Post[]) => {
       this.isLoading = false;
@@ -42,7 +43,9 @@ export class PostListComponent implements OnInit, OnDestroy {
   }
 
   onChangedPage (pageData: PageEvent) {
-    console.log(pageData);
+    this.currentPage = pageData.pageIndex + 1;
+    this.postsPerPage = pageData.pageSize;
+    this.postsService.getPosts(this.postsPerPage, this.currentPage);
   }
 
   onDelete(postId: string) {
