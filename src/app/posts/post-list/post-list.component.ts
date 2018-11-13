@@ -21,7 +21,7 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   posts: Post[] = [];
   isLoading = false; // for mat-spinner
-  totalPosts = 10; // for mat-paginator
+  totalPosts = 0; // for mat-paginator
   postsPerPage = 2; // for mat-paginator
   currentPage = 1;
   pageSizeOptions = [1, 2, 5, 10]; // for mat-paginator
@@ -36,20 +36,25 @@ export class PostListComponent implements OnInit, OnDestroy {
     this.isLoading = true; // for mat-spinner
     this.postsService.getPosts(this.postsPerPage, this.currentPage);
     this.postsSub = this.postsService.getPostsUpdateListner()
-    .subscribe((posts: Post[]) => {
+    .subscribe((postData: { posts: Post[], postCount: number }) => {
       this.isLoading = false;
-      this.posts = posts;
+      this.totalPosts = postData.postCount;
+      this.posts = postData.posts;
     });
   }
 
   onChangedPage (pageData: PageEvent) {
+    this.isLoading = true;
     this.currentPage = pageData.pageIndex + 1;
     this.postsPerPage = pageData.pageSize;
     this.postsService.getPosts(this.postsPerPage, this.currentPage);
   }
 
   onDelete(postId: string) {
-    this.postsService.deletePost(postId);
+    this.isLoading = true;
+    this.postsService.deletePost(postId).subscribe(() => {
+      this.postsService.getPosts(this.postsPerPage, this.currentPage);
+    });
   }
 
   ngOnDestroy() {

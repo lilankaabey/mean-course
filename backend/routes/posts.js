@@ -79,7 +79,7 @@ router.get("", (req, res, next) => {
       .limit(pageSize);
   }
   postQuery.then(documents => {
-    fetchedPosts = document;
+    fetchedPosts = documents;
     return Post.count();
   })
   .then(count => {
