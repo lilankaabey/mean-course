@@ -66,7 +66,8 @@ export class PostCreateComponent implements OnInit {
     this.form.get('image').updateValueAndValidity();
     const reader = new FileReader();
     reader.onload = () => {
-      this.imagePreview = reader.result;
+      this.imagePreview = reader.result as string; // [https://stackoverflow.com/
+                                                  // questions/52955710/type-string-arraybuffer-is-not-assignable-to-type-string]
     };
     reader.readAsDataURL(file);
   }
