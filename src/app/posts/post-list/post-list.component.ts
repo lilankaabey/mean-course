@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { PageEvent } from '@angular/material';
 
 import { Post } from '../post.model';
 import { PostsService } from '../posts.service';
@@ -20,6 +21,9 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   posts: Post[] = [];
   isLoading = false; // for mat-spinner
+  totalPosts = 10; // for mat-paginator
+  postsPerPage = 2; // for mat-paginator
+  pageSizeOptions = [1, 2, 5, 10]; // for mat-paginator
   private postsSub: Subscription;
   // postsService: PostsService;
 
@@ -35,6 +39,10 @@ export class PostListComponent implements OnInit, OnDestroy {
       this.isLoading = false;
       this.posts = posts;
     });
+  }
+
+  onChangedPage (pageData: PageEvent) {
+    console.log(pageData);
   }
 
   onDelete(postId: string) {
