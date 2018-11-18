@@ -7,7 +7,7 @@
           name="email"
           ngModel
           type="email"
-          placeholder="E-mail" 
+          placeholder="E-mail"
           #emailInput="ngModel"
           required email>
         <mat-error *ngIf="emailInput.invalid">Please enter a valid email.</mat-error>
@@ -27,6 +27,8 @@
       <button
         mat-raised-button
         color="accent"
-        type="submit">Signup</button>
+        type="submit"
+        *ngIf="!isLoading">Signup</button>
+      <mat-spinner *ngIf="isLoading"></mat-spinner>
   </form>
 </mat-card>
