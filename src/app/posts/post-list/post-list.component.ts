@@ -4,6 +4,7 @@ import { PageEvent } from '@angular/material';
 
 import { Post } from '../post.model';
 import { PostsService } from '../posts.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-post-list',
@@ -25,22 +26,30 @@ export class PostListComponent implements OnInit, OnDestroy {
   postsPerPage = 2; // for mat-paginator
   currentPage = 1;
   pageSizeOptions = [1, 2, 5, 10]; // for mat-paginator
+  userIsAuthenticated = false;
   private postsSub: Subscription;
-  // postsService: PostsService;
+  private authStatusSubs: Subscription;
 
-  constructor(public postsService: PostsService) {
+  constructor(public postsService: PostsService, private authService: AuthService) {
     // this.postsService = postsService;
   }
 
   ngOnInit() {
     this.isLoading = true; // for mat-spinner
     this.postsService.getPosts(this.postsPerPage, this.currentPage);
-    this.postsSub = this.postsService.getPostsUpdateListner()
-    .subscribe((postData: { posts: Post[], postCount: number }) => {
-      this.isLoading = false;
-      this.totalPosts = postData.postCount;
-      this.posts = postData.posts;
-    });
+    this.postsSub = this.postsService
+      .getPostsUpdateListner()
+      .subscribe((postData: { posts: Post[], postCount: number }) => {
+        this.isLoading = false;
+        this.totalPosts = postData.postCount;
+        this.posts = postData.posts;
+      });
+    this.userIsAuthenticated = this.authService.getIsAuth();
+    this.authStatusSubs = this.authService
+      .getAuthStatusListener()
+      .subscribe(isAuthenticated => {
+        this.userIsAuthenticated = isAuthenticated;
+      });
   }
 
   onChangedPage (pageData: PageEvent) {
@@ -59,5 +68,6 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.postsSub.unsubscribe();
+    this.authStatusSubs.unsubscribe();
   }
 }
